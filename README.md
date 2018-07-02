@@ -1,15 +1,13 @@
 # Kite TestEnv
 
-A full-stack environment following the microservice architecture using Kite as a service framework and Kontrol for cross-service communication and delegation.
+A full-stack environment following the microservice architecture using Nameko as a service framework and for cross-service communication and delegation.
 
 ---
 
 Stack:
 - Backend
-  - Golang
-    - [Kite](https://github.com/koding/kite)
-    - [Kontrol](https://github.com/koding/kite)
-    - [Chi](https://github.com/go-chi/chi)
+  - Python
+    - [Nameko](https://github.com/koding/kite)
 - Frontend
   - Javascript
     - [CRA](https://github.com/facebook/create-react-app)
@@ -19,22 +17,22 @@ Stack:
 
 ### How it works
 
-The flow is pretty simple:
+The flow is as simple as Kontrol:
 
 ```
-Kontrol <--> Microservices <--> API Gateway <--> Client
+Nameko <--> Microservices <--> API Gateway <--> Client
 ```
 
-Each microservice registers with Kontrol so it can be found by other microservices through a query. The Gateway itself is a microservice so it can communicate with all existing microservices through Kontrol, as well as expose an outward facing API to coordinate requests from the client.
+Each microservice registers with RabbitMQ so it can communicate with other microservices. The API Gateway creates an external interface to coordinate data with the internal microservices.
 
 ---
 
 ### The Test Environment
 
-**Kontrol** is installed by `go get github.com/koding/kite/kontrol/kontrol`, needing SSL keys generated. See `run-kontrol.sh` for relevant environment variables.
+**RabbitMQ** is installed by `brew install rabbitmq`. This project assumes a fresh install using default ports and username/password.
 
-**Microservices** are located in the `server` folder. In this case there's only one, but can be easily expanded using the same flow exemplified in the `main.go` file.
+**Microservices** are located in the `server` folder. In this case there's only one, but can be easily expanded using the same flow exemplified in the `service.py` file.
 
-**API Gateway** is located in the `gateway` folder. This is split into two parts: a repo connecting to all the services making it easy to call methods by passing a service name, a method name, and arguments from anywhere; and a router which gives clients a centralized address to fetch data from the microservices.
+**API Gateway** is located in the `gateway` folder. Since sending and recieving RPC messages to and from other services is more intuitive than Kontrol, there only needs to be the routing and handling layer.
 
-**Client** is simply what's used to test connectivity to the gateway, using create-react-app and a test request to the only existing method, `square`. 
+**Frontend** is simply what's used to test connectivity to the gateway, using create-react-app and a test request to the only existing method, `square`. 
